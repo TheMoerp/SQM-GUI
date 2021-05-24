@@ -11,5 +11,23 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    spinBase = ui->spinBase;
+    spinExp = ui->spinExp;
+    spinMod = ui->spinMod;
+
+    connect(spinBase, SIGNAL(valueChanged(int)), this, SLOT(SetModel()));
+    connect(spinExp, SIGNAL(valueChanged(int)), this, SLOT(SetModel()));
+    connect(spinMod, SIGNAL(valueChanged(int)), this, SLOT(SetModel()));
+
+    resultTable = ui->resultTable;
+
 }
 
+void MainWindow::SetModel() {
+    int base = spinBase->value();
+    int exp = spinExp->value();
+    int mod = spinMod->value();
+
+    resultTableModel->SetStartValues(base, exp, mod);
+    resultTable->setModel(resultTableModel);
+}

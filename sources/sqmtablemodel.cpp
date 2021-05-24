@@ -5,6 +5,16 @@ SQMTableModel::SQMTableModel(QObject *parent)
     : QAbstractTableModel(parent) {
 }
 
+
+int SQMTableModel::rowCount(const QModelIndex & parent) const {
+    return binLen;
+}
+
+int SQMTableModel::columnCount(const QModelIndex & parent) const {
+    return 3;
+}
+
+
 QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
 
     if (role == Qt::DisplayRole) {
@@ -15,6 +25,7 @@ QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
     }
     return QVariant();
 }
+
 
 void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
     base = pBase;
@@ -37,7 +48,7 @@ std::string SQMTableModel::IntToBinary(int n) {
 
 void SQMTableModel::CalculateSqmMatrix(int startRow) {
     string bin = IntToBinary(exp);
-    int binLen = bin.length();
+    binLen = bin.length();
 
     // Initialize bin column
     vector<int> colBin;
