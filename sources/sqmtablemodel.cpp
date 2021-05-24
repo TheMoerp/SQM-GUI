@@ -23,6 +23,7 @@ void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
 }
 
 
+// Convert int to binary
 std::string SQMTableModel::IntToBinary(int n) {
     string bin;
     int mask = 1;
