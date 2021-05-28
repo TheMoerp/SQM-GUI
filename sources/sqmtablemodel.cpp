@@ -27,6 +27,30 @@ QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
 }
 
 
+bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+    if (role == Qt::EditRole) {
+        if (!checkIndex(index)) {
+            return false;
+        }
+        int row = index.row();
+        int col = index.column();
+
+
+        // call calculateSqmMatrix
+        sqmMatrix.at(col).at(row) = value.toInt();
+        CalculateSqmMatrix(row);
+        return true;
+    }
+    return false;
+}
+
+
+Qt::ItemFlags SQMTableModel::flags(const QModelIndex &index) const {
+    return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
+}
+
+
+
 void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
     base = pBase;
     exp = pExp;
