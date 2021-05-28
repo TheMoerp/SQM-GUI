@@ -124,3 +124,26 @@ void SQMTableModel::CalculateSqmMatrix() {
         }
     }
 }
+
+
+void SQMTableModel::UpdateSqmMatrix(QModelIndex startIndex) {
+    int start_row = startIndex.row();
+    int start_col = startIndex.column();
+
+    // If change appeared in col 2, start in next row
+    if (start_col == 2) {
+        start_row++;
+    }
+
+    // Update sqmMatrix
+    for (int i = start_row; i < binLen; i++) {
+        sqmMatrix.at(1).at(i) = (sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod;
+
+        if (sqmMatrix.at(0).at(i) == 0) {
+            sqmMatrix.at(2).at(i) = sqmMatrix.at(1).at(i);
+        }
+        else {
+            sqmMatrix.at(2).at(i) = (sqmMatrix.at(1).at(i) * base) % mod;
+        }
+    }
+}
