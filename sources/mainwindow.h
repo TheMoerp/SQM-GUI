@@ -27,7 +27,7 @@ private:
     Ui::MainWindow *ui;
     QSpinBox *spinBase, *spinExp, *spinMod;
     QTableView *resultTable;
-    SQMTableModel *resultTableModel;
+    //SQMTableModel *resultTableModel;
 
 };
 #endif // MAINWINDOW_H

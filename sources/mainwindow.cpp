@@ -31,8 +31,9 @@ void MainWindow::SetModel() {
     int exp = spinExp->value();
     int mod = spinMod->value();
 
+    SQMTableModel resultTableModel;
 
-    resultTableModel->SetStartValues(base, exp, mod);
-    resultTable->setModel(resultTableModel);
+    resultTableModel.SetStartValues(base, exp, mod);
+    resultTable->setModel(&resultTableModel);
     resultTable->show();
 }
