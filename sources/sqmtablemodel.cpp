@@ -1,4 +1,5 @@
 #include "sqmtablemodel.h"
+#include <algorithm>
 
 
 SQMTableModel::SQMTableModel(QObject *parent)
@@ -55,7 +56,9 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
 
         // call calculateSqmMatrix
         sqmMatrix.at(col).at(row) = value.toInt();
-        CalculateSqmMatrix(row);
+
+
+        //UpdateSqmMatrix();
         return true;
     }
     return false;
@@ -73,7 +76,7 @@ void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
     exp = pExp;
     mod = pMod;
 
-    CalculateSqmMatrix(0);
+    CalculateSqmMatrix();
 }
 
 
@@ -86,12 +89,13 @@ std::string SQMTableModel::IntToBinary(int n) {
         n = n >> 1;
     }
 
+    reverse(bin.begin(), bin.end());
     return bin;
 }
 
 void SQMTableModel::CalculateSqmMatrix() {
     // Clear sqmMatrix
-    sqmMatrix.clear()
+    sqmMatrix.clear();
 
     // Calculate binary of exponent
     string bin = IntToBinary(exp);
@@ -99,7 +103,7 @@ void SQMTableModel::CalculateSqmMatrix() {
 
     // Init BIN Column
     vector<int> colBin;
-    for (int i = 0; i < binLen; i++) {
+    for (int i = 0; i <= binLen; i++) {
         colBin.push_back(bin[i] - '0');
     }
     sqmMatrix.push_back(colBin);
@@ -113,7 +117,7 @@ void SQMTableModel::CalculateSqmMatrix() {
 
 
     // Calculate SQM
-    for (int i = 0; i < binLen; i++) {
+    for (int i = 0; i <= binLen; i++) {
         sqmMatrix.at(1).push_back((sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod);
 
         if (sqmMatrix.at(0).at(i) == 0) {
