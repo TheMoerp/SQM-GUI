@@ -16,15 +16,17 @@ int SQMTableModel::columnCount(const QModelIndex & /*parent*/) const {
 
 
 QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
+    try {
+        if (role == Qt::DisplayRole) {
+            int row = index.row();
+            int col = index.column();
 
-    if (role == Qt::DisplayRole) {
-//        int row = index.row();
-//        int col = index.column();
-
-//        return sqmMatrix.at(col).at(row);
-        return "test";
+            return sqmMatrix.at(col).at(row);
+        }
     }
-    return QVariant();
+    catch (...) {
+        return QVariant();
+    }
 }
 
 QVariant SQMTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -70,6 +72,8 @@ void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
     base = pBase;
     exp = pExp;
     mod = pMod;
+
+    CalculateSqmMatrix(0);
 }
 
 
@@ -89,12 +93,24 @@ void SQMTableModel::CalculateSqmMatrix(int startRow) {
     string bin = IntToBinary(exp);
     binLen = bin.length();
 
+    // Fill vector with 0
+   vector<int> colSqn, colMul;
+   for (int i = 0; i <= binLen; i++) {
+        colSqn.push_back(0);
+        colMul.push_back(0);
+   }
+
+
+
     // Initialize bin column
     vector<int> colBin;
-    for (int i = 0; i < binLen; i++) {
+    for (int i = 0; i <= binLen; i++) {
         colBin.push_back(bin[i] - '0');
     }
-    sqmMatrix.at(0) = colBin;
+    sqmMatrix.push_back(colBin);
+    sqmMatrix.push_back(colSqn);
+    sqmMatrix.push_back(colMul);
+
 
     for (int i = startRow; i < binLen; i++) {
         if (i == 0) {
