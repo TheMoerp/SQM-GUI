@@ -6,11 +6,11 @@ SQMTableModel::SQMTableModel(QObject *parent)
 }
 
 
-int SQMTableModel::rowCount(const QModelIndex & parent) const {
-    return binLen;
+int SQMTableModel::rowCount(const QModelIndex & /*parent*/) const {
+    return 2;
 }
 
-int SQMTableModel::columnCount(const QModelIndex & parent) const {
+int SQMTableModel::columnCount(const QModelIndex & /*parent*/) const {
     return 3;
 }
 
@@ -24,6 +24,20 @@ QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
         return sqmMatrix.at(col).at(row);
     }
     return QVariant();
+}
+
+QVariant SQMTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+            switch (section) {
+            case 0:
+                return QString("BIN");
+            case 1:
+                return QString("SQN");
+            case 2:
+                return QString("MUL");
+            }
+        }
+        return QVariant();
 }
 
 
