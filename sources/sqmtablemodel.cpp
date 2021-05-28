@@ -8,7 +8,7 @@ SQMTableModel::SQMTableModel(QObject *parent)
 
 
 int SQMTableModel::rowCount(const QModelIndex & /*parent*/) const {
-    return 2;
+    return binLen;
 }
 
 int SQMTableModel::columnCount(const QModelIndex & /*parent*/) const {
@@ -103,10 +103,14 @@ void SQMTableModel::CalculateSqmMatrix() {
 
     // Init BIN Column
     vector<int> colBin;
-    for (int i = 0; i <= binLen; i++) {
+    for (int i = 0; i < binLen; i++) {
         colBin.push_back(bin[i] - '0');
     }
+
+    // Add or remove rows
+    beginResetModel();
     sqmMatrix.push_back(colBin);
+    endResetModel();
 
     // Init SQN & MUL Column
     vector<int> colSqn, colMul;
@@ -117,7 +121,7 @@ void SQMTableModel::CalculateSqmMatrix() {
 
 
     // Calculate SQM
-    for (int i = 0; i <= binLen; i++) {
+    for (int i = 1; i < binLen; i++) {
         sqmMatrix.at(1).push_back((sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod);
 
         if (sqmMatrix.at(0).at(i) == 0) {

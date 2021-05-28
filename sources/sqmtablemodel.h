@@ -26,7 +26,7 @@ private:
     int base;
     int exp;
     int mod;
-    int binLen;
+    int binLen = 0;
 
     vector<vector <int>> sqmMatrix;
 };

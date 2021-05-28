@@ -52,7 +52,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinMod"/>
+      <widget class="QSpinBox" name="spinMod">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
