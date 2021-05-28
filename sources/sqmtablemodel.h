@@ -20,7 +20,8 @@ public:
 
 private:
     std::string IntToBinary(int n);
-    void CalculateSqmMatrix(int startRow);
+    void CalculateSqmMatrix();
+    void UpdateSqmMatrix(QModelIndex startIndex);
 
     int base;
     int exp;

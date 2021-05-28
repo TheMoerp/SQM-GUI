@@ -89,45 +89,38 @@ std::string SQMTableModel::IntToBinary(int n) {
     return bin;
 }
 
-void SQMTableModel::CalculateSqmMatrix(int startRow) {
+void SQMTableModel::CalculateSqmMatrix() {
+    // Clear sqmMatrix
+    sqmMatrix.clear()
+
+    // Calculate binary of exponent
     string bin = IntToBinary(exp);
     binLen = bin.length();
 
-    // Fill vector with 0
-   vector<int> colSqn, colMul;
-   for (int i = 0; i <= binLen; i++) {
-        colSqn.push_back(0);
-        colMul.push_back(0);
-   }
-
-
-
-    // Initialize bin column
+    // Init BIN Column
     vector<int> colBin;
-    for (int i = 0; i <= binLen; i++) {
+    for (int i = 0; i < binLen; i++) {
         colBin.push_back(bin[i] - '0');
     }
     sqmMatrix.push_back(colBin);
+
+    // Init SQN & MUL Column
+    vector<int> colSqn, colMul;
+    colSqn.push_back(1);
+    colMul.push_back(base);
     sqmMatrix.push_back(colSqn);
     sqmMatrix.push_back(colMul);
 
 
-    for (int i = startRow; i < binLen; i++) {
-        if (i == 0) {
-            // Initialize first row
-            sqmMatrix.at(1).at(0) = 1;
-            sqmMatrix.at(2).at(0) = base;
+    // Calculate SQM
+    for (int i = 0; i < binLen; i++) {
+        sqmMatrix.at(1).push_back((sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod);
+
+        if (sqmMatrix.at(0).at(i) == 0) {
+            sqmMatrix.at(2).push_back(sqmMatrix.at(1).at(i));
         }
         else {
-            // Square Multiply
-            sqmMatrix.at(1).at(i) = sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1);
-
-            if (sqmMatrix.at(0).at(i) == 0) {
-                sqmMatrix.at(2).at(i) = sqmMatrix.at(1).at(i);
-            }
-            else {
-                sqmMatrix.at(2).at(i) = sqmMatrix.at(1).at(i) * base;
-            }
+            sqmMatrix.at(2).push_back((sqmMatrix.at(1).at(i) * base) % mod);
         }
     }
 }
