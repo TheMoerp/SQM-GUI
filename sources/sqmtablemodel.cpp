@@ -18,10 +18,11 @@ int SQMTableModel::columnCount(const QModelIndex & /*parent*/) const {
 QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
 
     if (role == Qt::DisplayRole) {
-        int row = index.row();
-        int col = index.column();
+//        int row = index.row();
+//        int col = index.column();
 
-        return sqmMatrix.at(col).at(row);
+//        return sqmMatrix.at(col).at(row);
+        return "test";
     }
     return QVariant();
 }
