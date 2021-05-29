@@ -1,6 +1,7 @@
 #include "sqmtablemodel.h"
 #include <algorithm>
 #include <QColor>
+#include <QRegularExpression>
 
 
 SQMTableModel::SQMTableModel(QObject *parent)
@@ -32,28 +33,16 @@ QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
 
         break;
     case Qt::ForegroundRole:
-        if (changedHere.isValid()) {
-
-
+        if (changedHere.isValid() && highlightChanged) {
             if ((row > changedHere.row() || (col >= changedHere.column() && row == changedHere.row())) && (col != 0 || changedHere.column() == 0)) {
                 result = QColor(Qt::red);
             }
         }
         break;
+    case Qt::TextAlignmentRole:
+        result = Qt::AlignRight;
+        break;
     }
-
-//    if (role == Qt::DisplayRole) {
-//        int row = index.row();
-//        int col = index.column();
-//        QString result;
-//        try {
-//            result = QString::number(sqmMatrix.at(col).at(row));
-//        } catch (...) {
-//            result = "x";
-//        }
-
-//        return result;
-//    }
     return result;
 
 }
@@ -81,14 +70,14 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
         int row = index.row();
         int col = index.column();
 
-        if (col == 0 && value.toInt() != 0 && value.toInt() != 1) {
+        if (col == 0 && value.toInt() != 0 && value.toInt() != 1)  {
             return false;
         }
 
         // call calculateSqmMatrix
         sqmMatrix.at(col).at(row) = value.toInt();
         changedHere = index;
-
+        highlightChanged = true;
         UpdateSqmMatrix(index);
         return true;
     }
@@ -106,7 +95,7 @@ void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
     base = pBase;
     exp = pExp;
     mod = pMod;
-
+    highlightChanged = false;
     //changedHere.model()->index(-1, -1, QModelIndex());
     CalculateSqmMatrix();
 }

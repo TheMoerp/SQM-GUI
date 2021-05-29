@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle("Square Multiply Calculator");
 
     spinBase = ui->spinBase;
     spinExp = ui->spinExp;

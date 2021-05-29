@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>333</width>
-    <height>564</height>
+    <height>416</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,34 +20,42 @@
       <x>10</x>
       <y>10</y>
       <width>311</width>
-      <height>71</height>
+      <height>31</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="labBase">
        <property name="text">
-        <string>Base:</string>
+        <string>base:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBase"/>
+      <widget class="QSpinBox" name="spinBase">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="labExp">
        <property name="text">
-        <string>Exponent:</string>
+        <string>exponent:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinExp"/>
+      <widget class="QSpinBox" name="spinExp">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="labMod">
        <property name="text">
-        <string>Modulus:</string>
+        <string>modulos:</string>
        </property>
       </widget>
      </item>
@@ -55,6 +63,9 @@
       <widget class="QSpinBox" name="spinMod">
        <property name="minimum">
         <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>9999</number>
        </property>
       </widget>
      </item>
@@ -64,10 +75,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>50</y>
       <width>311</width>
-      <height>421</height>
+      <height>321</height>
      </rect>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::NoSelection</enum>
     </property>
     <attribute name="verticalHeaderStretchLastSection">
      <bool>false</bool>
