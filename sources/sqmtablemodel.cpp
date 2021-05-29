@@ -33,9 +33,10 @@ QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
         break;
     case Qt::ForegroundRole:
         if (changedHere.isValid()) {
-            if (row >= changedHere.row() && col >= changedHere.column()) {
-                result = QColor(Qt::red);
 
+
+            if ((row > changedHere.row() || (col >= changedHere.column() && row == changedHere.row())) && (col != 0 || changedHere.column() == 0)) {
+                result = QColor(Qt::red);
             }
         }
         break;
