@@ -17,17 +17,19 @@ int SQMTableModel::columnCount(const QModelIndex & /*parent*/) const {
 
 
 QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
-    try {
-        if (role == Qt::DisplayRole) {
-            int row = index.row();
-            int col = index.column();
-
-            return sqmMatrix.at(col).at(row);
+    if (role == Qt::DisplayRole) {
+        int row = index.row();
+        int col = index.column();
+        QString result;
+        try {
+            result = QString::number(sqmMatrix.at(col).at(row));
+        } catch (...) {
+            result = "x";
         }
+
+        return result;
     }
-    catch (...) {
-        return QVariant();
-    }
+    return QVariant();
 }
 
 QVariant SQMTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -58,7 +60,7 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
         sqmMatrix.at(col).at(row) = value.toInt();
 
 
-        //UpdateSqmMatrix();
+        UpdateSqmMatrix(index);
         return true;
     }
     return false;
@@ -145,7 +147,10 @@ void SQMTableModel::UpdateSqmMatrix(QModelIndex startIndex) {
 
     // Update sqmMatrix
     for (int i = start_row; i < binLen; i++) {
-        sqmMatrix.at(1).at(i) = (sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod;
+        if (start_col != 1) {
+            sqmMatrix.at(1).at(i) = (sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod;
+            start_col = 0;
+        }
 
         if (sqmMatrix.at(0).at(i) == 0) {
             sqmMatrix.at(2).at(i) = sqmMatrix.at(1).at(i);
