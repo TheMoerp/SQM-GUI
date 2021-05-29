@@ -81,6 +81,9 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
         int row = index.row();
         int col = index.column();
 
+        if (col == 0 && value.toInt() != 0 && value.toInt() != 1) {
+            return false;
+        }
 
         // call calculateSqmMatrix
         sqmMatrix.at(col).at(row) = value.toInt();
@@ -174,10 +177,14 @@ void SQMTableModel::UpdateSqmMatrix(QModelIndex startIndex) {
 
     // Update sqmMatrix
     for (int i = start_row; i < binLen; i++) {
-        if (start_col != 1) {
-            sqmMatrix.at(1).at(i) = (sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod;
-
+        if (start_row == 0 && start_col == 0) {
+            sqmMatrix.at(1).at(i) = 1;
+            start_row = 1;
         }
+        else if (start_col != 1) {
+            sqmMatrix.at(1).at(i) = (sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod;
+        }
+
         start_col = 0;
         if (sqmMatrix.at(0).at(i) == 0) {
             sqmMatrix.at(2).at(i) = sqmMatrix.at(1).at(i);
