@@ -1,5 +1,6 @@
 #include "sqmtablemodel.h"
 #include <algorithm>
+#include <QColor>
 
 
 SQMTableModel::SQMTableModel(QObject *parent)
@@ -17,19 +18,43 @@ int SQMTableModel::columnCount(const QModelIndex & /*parent*/) const {
 
 
 QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
-    if (role == Qt::DisplayRole) {
-        int row = index.row();
-        int col = index.column();
-        QString result;
+    int row = index.row();
+    int col = index.column();
+    QVariant result;
+    switch (role) {
+    case Qt::DisplayRole:
+
         try {
             result = QString::number(sqmMatrix.at(col).at(row));
         } catch (...) {
             result = "x";
         }
 
-        return result;
+        break;
+    case Qt::ForegroundRole:
+        if (changedHere.isValid()) {
+            if (row >= changedHere.row() && col >= changedHere.column()) {
+                result = QColor(Qt::red);
+
+            }
+        }
+        break;
     }
-    return QVariant();
+
+//    if (role == Qt::DisplayRole) {
+//        int row = index.row();
+//        int col = index.column();
+//        QString result;
+//        try {
+//            result = QString::number(sqmMatrix.at(col).at(row));
+//        } catch (...) {
+//            result = "x";
+//        }
+
+//        return result;
+//    }
+    return result;
+
 }
 
 QVariant SQMTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -58,7 +83,7 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
 
         // call calculateSqmMatrix
         sqmMatrix.at(col).at(row) = value.toInt();
-
+        changedHere = index;
 
         UpdateSqmMatrix(index);
         return true;
@@ -78,6 +103,7 @@ void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
     exp = pExp;
     mod = pMod;
 
+    //changedHere.model()->index(-1, -1, QModelIndex());
     CalculateSqmMatrix();
 }
 
@@ -149,9 +175,9 @@ void SQMTableModel::UpdateSqmMatrix(QModelIndex startIndex) {
     for (int i = start_row; i < binLen; i++) {
         if (start_col != 1) {
             sqmMatrix.at(1).at(i) = (sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod;
-            start_col = 0;
-        }
 
+        }
+        start_col = 0;
         if (sqmMatrix.at(0).at(i) == 0) {
             sqmMatrix.at(2).at(i) = sqmMatrix.at(1).at(i);
         }

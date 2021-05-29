@@ -27,6 +27,7 @@ private:
     int exp;
     int mod;
     int binLen = 0;
+    QModelIndex changedHere;
 
     vector<vector <int>> sqmMatrix;
 };
