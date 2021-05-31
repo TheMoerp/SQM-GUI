@@ -95,7 +95,14 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
         sqmMatrix.at(col).at(row) = value.toInt();
 
         // Changed index
-        changedHere = index;
+        if (changedHere.isValid()) {
+            if (row < changedHere.row() || col < changedHere.column()) {
+                changedHere = index;
+            }
+        }
+        else {
+            changedHere = index;
+        }
         highlightChanged = true;
 
         // Update sqmMatrix
@@ -120,7 +127,6 @@ void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
 
     // Nothing gets highlighted
     highlightChanged = false;
-
     // Calculate sqmMatrix with start values
     CalculateSqmMatrix();
 }
