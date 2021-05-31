@@ -11,19 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
     spinBase = ui->spinBase;
     spinExp = ui->spinExp;
     spinMod = ui->spinMod;
-
-
     resultTable = ui->resultTable;
+
     resultTableModel = new SQMTableModel;
-//    resultTable->setModel(resultTableModel);
-//    resultTable->show();
 
     connect(spinBase, SIGNAL(valueChanged(int)), this, SLOT(SetModel()));
     connect(spinExp, SIGNAL(valueChanged(int)), this, SLOT(SetModel()));
     connect(spinMod, SIGNAL(valueChanged(int)), this, SLOT(SetModel()));
-
-
-
 }
 
 MainWindow::~MainWindow() {
@@ -35,8 +29,7 @@ void MainWindow::SetModel() {
     int exp = spinExp->value();
     int mod = spinMod->value();
 
+        resultTableModel->SetStartValues(base, exp, mod);
+        resultTable->setModel(resultTableModel);
 
-    resultTableModel->SetStartValues(base, exp, mod);
-    resultTable->setModel(resultTableModel);
-    //resultTable->show();
 }

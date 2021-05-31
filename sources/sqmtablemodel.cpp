@@ -1,7 +1,6 @@
 #include "sqmtablemodel.h"
-#include <algorithm>
 #include <QColor>
-#include <QRegularExpression>
+#include <QBrush>
 
 
 SQMTableModel::SQMTableModel(QObject *parent)
@@ -17,14 +16,15 @@ int SQMTableModel::columnCount(const QModelIndex & /*parent*/) const {
     return 3;
 }
 
-
 QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
     int row = index.row();
     int col = index.column();
+
     QVariant result;
     switch (role) {
     case Qt::DisplayRole:
 
+        // Tries to get data for current index
         try {
             result = QString::number(sqmMatrix.at(col).at(row));
         } catch (...) {
@@ -33,32 +33,48 @@ QVariant SQMTableModel::data(const QModelIndex &index, int role) const {
 
         break;
     case Qt::ForegroundRole:
+        // ChangedHere index is set and Highlighting is on
         if (changedHere.isValid() && highlightChanged) {
-            if ((row > changedHere.row() || (col >= changedHere.column() && row == changedHere.row())) && (col != 0 || changedHere.column() == 0)) {
-                result = QColor(Qt::red);
+            // Does the current index has to be highlighted
+            if (((row > changedHere.row()) ||
+                 ((col >= changedHere.column()) && (row == changedHere.row()))) &&
+                ((col != 0) || ((changedHere.column() == 0) && (changedHere.row() == row)))) {
+
+                result = QColor(Qt::darkRed);
             }
         }
         break;
     case Qt::TextAlignmentRole:
+        // Everything is aligned right
         result = Qt::AlignRight;
         break;
+    case Qt::BackgroundRole:
+        // Result field is transparent red
+        if ((row == binLen - 1) && (col == 2)) {
+            result = QBrush(QColor(255, 0, 0, 50));
+            break;
+        }
     }
     return result;
 
 }
 
 QVariant SQMTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    QVariant result;
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
             switch (section) {
             case 0:
-                return QString("BIN");
+                result = QString("BIN");
+                break;
             case 1:
-                return QString("SQN");
+                result = QString("SQN");
+                break;
             case 2:
-                return QString("MUL");
+                result = QString("MUL");
+                break;
             }
         }
-        return QVariant();
+        return result;
 }
 
 
@@ -70,14 +86,19 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
         int row = index.row();
         int col = index.column();
 
+        // Do not change values in BIN column to anything but 0 or 1
         if (col == 0 && value.toInt() != 0 && value.toInt() != 1)  {
             return false;
         }
 
-        // call calculateSqmMatrix
+        // Call calculateSqmMatrix
         sqmMatrix.at(col).at(row) = value.toInt();
+
+        // Changed index
         changedHere = index;
         highlightChanged = true;
+
+        // Update sqmMatrix
         UpdateSqmMatrix(index);
         return true;
     }
@@ -92,40 +113,33 @@ Qt::ItemFlags SQMTableModel::flags(const QModelIndex &index) const {
 
 
 void SQMTableModel::SetStartValues(int pBase, int pExp, int pMod) {
+    // Init start values
     base = pBase;
     exp = pExp;
     mod = pMod;
+
+    // Nothing gets highlighted
     highlightChanged = false;
-    //changedHere.model()->index(-1, -1, QModelIndex());
+
+    // Calculate sqmMatrix with start values
     CalculateSqmMatrix();
-}
-
-
-// Convert int to binary
-std::string SQMTableModel::IntToBinary(int n) {
-    string bin;
-    int mask = 1;
-    while (n != 0) {
-        bin += (n & mask) == 0 ? "0" : "1";
-        n = n >> 1;
-    }
-
-    reverse(bin.begin(), bin.end());
-    return bin;
 }
 
 void SQMTableModel::CalculateSqmMatrix() {
     // Clear sqmMatrix
     sqmMatrix.clear();
 
-    // Calculate binary of exponent
-    string bin = IntToBinary(exp);
-    binLen = bin.length();
-
-    // Init BIN Column
+    // Exp to bin vector
     vector<int> colBin;
-    for (int i = 0; i < binLen; i++) {
-        colBin.push_back(bin[i] - '0');
+    binLen = 0;
+    while ((1 << binLen) <= exp) {
+        colBin.insert(colBin.begin(), ((exp >> binLen) & 1));
+        binLen += 1;
+    }
+    // If exp not set use 0 as exp
+    if (binLen == 0) {
+        binLen = 1;
+        colBin.push_back(0);
     }
 
     // Add or remove rows
@@ -135,16 +149,18 @@ void SQMTableModel::CalculateSqmMatrix() {
 
     // Init SQN & MUL Column
     vector<int> colSqn, colMul;
-    colSqn.push_back(1);
-    colMul.push_back(base);
+    colSqn.push_back(1 % mod);
+    colMul.push_back(base % mod);
     sqmMatrix.push_back(colSqn);
     sqmMatrix.push_back(colMul);
 
 
     // Calculate SQM
     for (int i = 1; i < binLen; i++) {
+        // SQN
         sqmMatrix.at(1).push_back((sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod);
 
+        // MUL
         if (sqmMatrix.at(0).at(i) == 0) {
             sqmMatrix.at(2).push_back(sqmMatrix.at(1).at(i));
         }
@@ -166,15 +182,19 @@ void SQMTableModel::UpdateSqmMatrix(QModelIndex startIndex) {
 
     // Update sqmMatrix
     for (int i = start_row; i < binLen; i++) {
+        // If change appeared in 0,0 do not calculate SQN as usuall
         if (start_row == 0 && start_col == 0) {
-            sqmMatrix.at(1).at(i) = 1;
+            sqmMatrix.at(1).at(i) = 1 % mod;
             start_row = 1;
         }
+        // If change appeared in col 1, skip calculation for this row in col 1. Otherwise it would get overwritten
         else if (start_col != 1) {
+            // MUL
             sqmMatrix.at(1).at(i) = (sqmMatrix.at(2).at(i - 1) * sqmMatrix.at(2).at(i - 1)) % mod;
         }
-
         start_col = 0;
+
+        // MUL
         if (sqmMatrix.at(0).at(i) == 0) {
             sqmMatrix.at(2).at(i) = sqmMatrix.at(1).at(i);
         }

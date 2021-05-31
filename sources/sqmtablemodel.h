@@ -19,7 +19,6 @@ public:
     void SetStartValues(int pBase, int pExp, int pMod);
 
 private:
-    std::string IntToBinary(int n);
     void CalculateSqmMatrix();
     void UpdateSqmMatrix(QModelIndex startIndex);
 
