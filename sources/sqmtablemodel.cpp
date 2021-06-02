@@ -4,7 +4,9 @@
 
 
 SQMTableModel::SQMTableModel(QObject *parent)
-    : QAbstractTableModel(parent) {
+    : QAbstractTableModel(parent),
+    binLen(0) {
+
 }
 
 
@@ -94,9 +96,11 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
         // Call calculateSqmMatrix
         sqmMatrix.at(col).at(row) = value.toInt();
 
-        // Changed index
-        if (changedHere.isValid()) {
-            if (row < changedHere.row() || col < changedHere.column()) {
+        // Changed index (sometimes col 0 will not get highlighted)
+        if (changedHere.isValid() && highlightChanged) {
+            if (((row <= changedHere.row()) && (col <= changedHere.column())) ||
+                 (changedHere.column() == 0 && row <= changedHere.row()) ||
+                 (changedHere.column() == 1 && (row < changedHere.row() || col == 0))){
                 changedHere = index;
             }
         }
