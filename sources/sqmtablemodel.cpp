@@ -101,6 +101,7 @@ bool SQMTableModel::setData(const QModelIndex &index, const QVariant &value, int
             if (((row <= changedHere.row()) && (col <= changedHere.column())) ||
                  (changedHere.column() == 0 && row <= changedHere.row()) ||
                  (changedHere.column() == 1 && (row < changedHere.row() || col == 0))){
+
                 changedHere = index;
             }
         }
@@ -181,6 +182,7 @@ void SQMTableModel::CalculateSqmMatrix() {
 }
 
 
+// Can be merged with CalculateSqmMatrix
 void SQMTableModel::UpdateSqmMatrix(QModelIndex startIndex) {
     int start_row = startIndex.row();
     int start_col = startIndex.column();

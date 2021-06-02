@@ -25,7 +25,7 @@ private:
     int base;
     int exp;
     int mod;
-    int binLen = 0;
+    int binLen;
     bool highlightChanged;
     QModelIndex changedHere;
 
